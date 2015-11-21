@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Junk</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.yeti.min.css" rel="stylesheet">
+    <link href="css/bootstrap-nav-wizard.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <style>
+      #map-canvas {
+        height: 600px;
+      }
+    </style>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="static/js/html5shiv.js"></script>
+      <script src="static/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body style="height: 100%">
+    <div id="map-canvas" style="width: 100%; height:100%"></div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.10.1.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+<script type="text/javascript">
+    var map;
+    $(document).ready(function(){
+        map = L.map('map-canvas', {
+            center: [41.83887416186901, -87.87139892578125],
+            zoom: 9,
+            scrollWheelZoom: false
+        });
+        L.tileLayer('https://{s}.tiles.mapbox.com/v3/ericvanzanten.map-3ofkoxuh/{z}/{x}/{y}.png',{
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+        }).addTo(map);
+
+        var asset_id = window.location.hash.split('-')[1];
+
+        $.when($.getJSON(asset_id + '.geojson')).then(function(data){
+            var assetLayer = L.geoJson(data, {
+                onEachFeature: function(feature, layer){
+                    var stuff = '';
+                    $.each(feature.properties, function(i, prop){
+                        stuff += '<strong>' + i + '</strong> ' + prop + '<br />';
+                    });
+                    layer.bindPopup(stuff);
+                }
+            }).addTo(map);
+            map.fitBounds(assetLayer.getBounds())
+        })
+
+    });
+
+</script>
+
+  </body>
+</html>
